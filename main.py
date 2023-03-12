@@ -4,13 +4,14 @@ import sys
 import requests
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QSlider
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtCore import Qt
 
 
 class Map(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi("ps/map2.ui", self)
+        uic.loadUi("ps/map3.ui", self)
         self.z = 0
         self.setWindowTitle("Yandex Map")
         self.slider.valueChanged.connect(self.change_text)
@@ -18,10 +19,17 @@ class Map(QMainWindow):
 
     def change_text(self):
         self.scale.setText(str(self.slider.value()))
-        self.z = self.slider.value()
+
+    def z_change(self, up_or_down):
+        if up_or_down == "down":
+            self.slider.setValue(self.slider.value() - 1)
+        else:
+            self.slider.setValue(self.slider.value() + 1)
+        self.generate()
 
     def generate(self):
-        map_request = f"http://static-maps.yandex.ru/1.x/?ll={self.yline.text()},{self.xline.text()}&z={self.z}&size=490,315&l=map"
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={self.yline.text()}," \
+                      f"{self.xline.text()}&z={self.slider.value()}&size=490,315&l=map"
         response = requests.get(map_request)
 
         if not response:
@@ -37,6 +45,12 @@ class Map(QMainWindow):
 
     def closeEvent(self, event):
         os.remove(self.map_file)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_PageDown:
+            self.z_change("down")
+        elif event.key() == Qt.Key.Key_PageUp:
+            self.z_change("up")
 
 
 if __name__ == '__main__':
