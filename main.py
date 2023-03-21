@@ -4,7 +4,7 @@ import sys
 import requests
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 from PyQt5.QtCore import Qt
 
 
@@ -25,6 +25,17 @@ class Map(QMainWindow):
             self.slider.setValue(self.slider.value() - 1)
         else:
             self.slider.setValue(self.slider.value() + 1)
+        self.generate()
+
+    def change_coords(self, direction):
+        if direction == "up":
+            self.xline.setText(str(float(self.xline.text()) + 0.06))
+        elif direction == "down":
+            self.xline.setText(str(float(self.xline.text()) - 0.06))
+        elif direction == "left":
+            self.yline.setText(str(float(self.yline.text()) - 0.06))
+        elif direction == "right":
+            self.yline.setText(str(float(self.yline.text()) + 0.06))
         self.generate()
 
     def generate(self):
@@ -51,6 +62,14 @@ class Map(QMainWindow):
             self.z_change("down")
         elif event.key() == Qt.Key.Key_PageUp:
             self.z_change("up")
+        elif event.key() == Qt.Key.Key_W:
+            self.change_coords("up")
+        elif event.key() == Qt.Key.Key_S:
+            self.change_coords("down")
+        elif event.key() == Qt.Key.Key_A:
+            self.change_coords("left")
+        elif event.key() == Qt.Key.Key_D:
+            self.change_coords("right")
 
 
 if __name__ == '__main__':
